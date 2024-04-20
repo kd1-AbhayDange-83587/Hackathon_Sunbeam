@@ -1,6 +1,10 @@
 package com.sunbeam.tester;
 
+import java.sql.SQLException;
 import java.util.Scanner;
+
+import com.sunbeam.dao.UserDao;
+import com.sunbeam.entity.User;
 
 public class Test {
 	//For the Main Menu/First page of the Program... 
@@ -37,31 +41,39 @@ public class Test {
 		System.out.print("Password : ");
 		String password = sc.next();
 		System.out.println();
-		checkForCharacter(sc);
-		checkForLoginDetails(sc, email, password);
+		checkForCharacterForLogin(sc, email, password);
 	}
 	
 	//To check the Line "Enter c to continue and e to exit from Application"
-	public static void  checkForCharacter(Scanner sc) {
+	public static void checkForCharacterForLogin(Scanner sc, String email, String password) {
 		System.out.println("Enter c to continue and e to exit from the app");
 		String character = sc.next();
-		if(character == "c") {
-			//TODO
+		if(character.equals("c")) {
+			ifCpressedInLogin(sc, email, password);
 		}
 		else if(character.equals("e")){
 			mainMenu(sc);
 		}
 		else {
 			System.out.println("Please Enter valid character");
-			checkForCharacter(sc);
+			checkForCharacterForLogin(sc, email, password);
 		}
 	}
 	
-	public static void checkForLoginDetails(Scanner sc, String email, String password) {
-		//For this we will be using jdbc
+	public static void ifCpressedInLogin(Scanner sc, String email, String password) {
+		try(UserDao ud = new UserDao()){
+			int userID = ud.checkForUserCreds(sc, email, password);	
+			AfterSuccessfulLoginBlogingPage(sc, userID);
+		}			
+		 catch (SQLException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
-	public static void AfterSuccessfulLogin() {
+	//After the user name and password is inserted and checked in DB where the values are present after that this function is called
+	public static void AfterSuccessfulLoginBlogingPage(Scanner sc, int userID) {
 		System.out.println("Welcome <user>");
 		System.out.println("1. Add Category");
 		System.out.println("2. Show Categories");
@@ -71,6 +83,31 @@ public class Test {
 		System.out.println("6. Search Blog");
 		System.out.println("7. Delete Blog");
 		System.out.println("8. Logout");
+	}
+	
+	public static void RegistrationPage(Scanner sc) {
+		System.out.println("Please enter your details");
+		System.out.println();
+		System.out.println("Email -");
+		String email = sc.next();
+		System.out.println("Password - ");
+		String password = sc.next();
+		System.out.println("Full Name - ");
+		String fullName = sc.nextLine();
+		System.out.println("Phone Number - ");
+		String phoneNo = sc.next();
+		System.out.println("Enter c to continue and e to exit from the app");
+		String character = sc.next();
+		if(character.equals("c")) {
+			
+		}
+		else if(character.equals("e")){
+			mainMenu(sc);
+		}
+		else {
+			System.out.println("Please Enter valid character");
+			RegistrationPage(sc);
+		}
 	}
 	
 	public static void main(String[] args) {
